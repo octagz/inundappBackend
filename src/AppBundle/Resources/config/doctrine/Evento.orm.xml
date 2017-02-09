@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="AppBundle\Entity\Evento" table="evento">
+    <id name="id" type="integer" column="id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="latitud" type="float" column="latitud" precision="10" scale="0" nullable="false"/>
+    <field name="longitud" type="float" column="longitud" precision="10" scale="0" nullable="false"/>
+    <field name="fecha" type="datetime" column="fecha" nullable="false"/>
+    <field name="fenomeno" type="string" column="fenomeno" length="40" nullable="false"/>
+    <many-to-many field="idImagen" target-entity="Imagen" inversed-by="idEvento">
+      <join-table name="evento_imagen">
+        <join-columns>
+          <join-column name="id_evento" referenced-column-name="id"/>
+        </join-columns>
+        <inverse-join-columns>
+          <join-column name="id_imagen" referenced-column-name="id"/>
+        </inverse-join-columns>
+      </join-table>
+    </many-to-many>
+    <many-to-many field="nombreAfectacion" target-entity="Afectacion" inversed-by="idEvento">
+      <join-table name="evento_afectacion">
+        <join-columns>
+          <join-column name="id_evento" referenced-column-name="id"/>
+        </join-columns>
+        <inverse-join-columns>
+          <join-column name="nombre_afectacion" referenced-column-name="nombre"/>
+        </inverse-join-columns>
+      </join-table>
+    </many-to-many>
+  </entity>
+</doctrine-mapping>
