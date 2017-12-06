@@ -47,12 +47,7 @@ class TipoEvento extends AbstractType {
                 'choices_as_values' => true,
                 'required' => true
                         )
-                 )
-              /* ->add('imagen', TipoImagen::class,
-                    array(
-                        'required' => false
-                        )
-                    )*/;
+                 );
        
     }
   

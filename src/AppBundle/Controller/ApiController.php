@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\Evento;
 use AppBundle\Form\TipoEvento;
 use AppBundle\Entity\Imagen;
-use AppBundle\Form\TipoImagen;
 
 class ApiController extends Controller {
 
@@ -29,7 +28,7 @@ class ApiController extends Controller {
             array_push($eventosSerializados,$this->serializarEvento($e));
         }
         $response = new Response(json_encode($eventosSerializados), 200);
-        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
+	      $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
         return $response;
     }
     
@@ -80,9 +79,8 @@ class ApiController extends Controller {
               }
             $response = new Response(json_encode($eventosSerializados), 200);
        }else {
-               $response = new Response("[]");
+               $response = new Response("[]",400);
             }   
-      
       $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
       return $response;
       }
@@ -92,7 +90,6 @@ class ApiController extends Controller {
      * @Method("GET")
      */
     public function GetEventoAction($id,Request $request) {
-   
       
        //Recupero el repositorio para los eventos
         $repositorio = $this->getDoctrine()->getRepository('AppBundle:Evento');
@@ -104,13 +101,57 @@ class ApiController extends Controller {
        
        if (!$evento) {
           
-          return new Response("[]");   
+          return new Response("[]",404);   
         }
-        $response = new Response(json_encode($this->serializarEvento($evento)), 200);
-        $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
-        return $response;
+	     $response = new Response(json_encode($this->serializarEvento($evento)), 200);
+       $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
+
+      return $response;
         
     }
+
+    /**
+      * @Route("/api/eventos/{id}")
+      * @Method("PUT")
+      */
+    public function subirImagen(Request $request, $id) {
+
+       //Recupero el repositorio para los eventos
+        $repositorio = $this->getDoctrine()->getRepository('AppBundle:Evento');
+        
+       $criterio = array('id' => $id);
+        
+       //findOneBy valida en base al criterio(id) todos los casos.
+       $evento = $repositorio->findOneBy($criterio);
+
+       $imagen = new Imagen();
+
+       //Estamos seguros que el evento existe y es levantando de la bd
+       $data = $request->getContent();
+
+       if ($imagen->upload($data) === FALSE) {
+          $response = new Response('Ocurrio un error al subir la imagen.',400);      
+       }
+       else { //Successful upload!
+
+          $evento->addIdImagen($imagen);
+          //Recupero el entity manager
+          $em = $this->getDoctrine()->getManager();
+
+          //Guardo los cambios en la bd
+          $em->persist($imagen);
+          $em->persist($evento);
+          $em->flush();
+
+          $response = new Response('Upload completado',201);    
+       }
+
+    	$response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
+
+    	return $response;
+
+    }
+
     
     /**
      * @Route("/api/eventos") 
@@ -128,64 +169,23 @@ class ApiController extends Controller {
         $errors = $validator->validate($evento);
         if (!count($errors)) {
 
-            $em = $this->getDoctrine()->getManager();
+         $em = $this->getDoctrine()->getManager();
+
             $em->persist($evento);
             $em->flush();
 
-            return new Response(json_encode($this->serializarEvento($evento)),201);
+            $response = new Response(json_encode(
+              array(
+                'upload_uri' => urlencode($evento->getId()))
+              )
+            ,201);
          } else {
-
-             return new Response($errors);
+            $response = new Response($errors, 400);
          }
-    }
 
-    /**
-     * @Route("/api/eventos/{id}") 
-     * @Method("PUT")
-     */
-    public function CargarImagen($id, Request $request) {
-        
-            //Recupero el repositorio para los eventos
-        $repositorio = $this->getDoctrine()->getRepository('AppBundle:Evento');
-          
-         $criterio = array('id' => $id);
-          
-         //findOneBy valida en base al criterio(id) todos los casos.
-         $evento = $repositorio->findOneBy($criterio);
+	$response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
 
-         $imagen = new Imagen();
-
-         //Estamos seguros que el evento existe y es levantando de la bd
-         $data = $request->getContent();
-         $validator = $this->get('validator');
-         $form = $this->createForm(new TipoImagen(), $imagen);
-         $form->submit($data);
-
-          $form->handleRequest($request);
-          if($form->isSubmitted()){
-
-          //Valido los datos de la imagen
-          $errors = $validator->validate($imagen);
-          if (!count($errors)) {
-
-            $evento->addImagen($imagen);
-            $imagen->upload();
-            dump($imagen);
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($evento);
-            $em->flush();
-
-            return new Response("Upload funcionó");
-           }
-          else {
-                return new Response($errors);
-              }
-         } else {
-                  return new Response('Error de validación del form.');
-               }
-          
-         
+	return $response;
     }
     
      private function serializarEvento(Evento $evento)
@@ -197,8 +197,8 @@ class ApiController extends Controller {
             'id' => $evento->getId(),
             'afectaciones' =>$this->serializarAfectacion($evento->getNombreAfectacion()),
             'fenomeno'=>$evento->getFenomeno(),
-            'upload_uri' => urlencode('localhost:8000/api/eventos/'.$evento->getId())
-        );
+            'imagenes'=>$this->serializarImagen($evento->getIdImagen())
+            );
     }
     
     private function serializarAfectacion($afectaciones) {
@@ -210,5 +210,21 @@ class ApiController extends Controller {
          
         return $afectacionesSerializadas;
     }
-    
+
+    private function serializarImagen($imagenes) {
+        
+        $imagenesSerializadas = array();
+        foreach($imagenes as $i){
+            array_push($imagenesSerializadas,urlencode($this->URLSitio().$i->getWebPath()));
+         }
+         
+        return $imagenesSerializadas;
+    }
+
+    function URLSitio()
+    {
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+        $domainName = $_SERVER['HTTP_HOST'].'/';
+        return $protocol.$domainName;
+    }
 }

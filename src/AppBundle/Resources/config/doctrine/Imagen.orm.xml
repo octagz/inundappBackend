@@ -4,7 +4,6 @@
     <id name="id" type="integer" column="id">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="nombre" type="string" column="nombre" length="40" nullable="false"/>
     <field name="path" type="string" column="path" length="100" nullable="false"/>
     <many-to-many field="idEvento" target-entity="Evento" mapped-by="idImagen"/>
   </entity>

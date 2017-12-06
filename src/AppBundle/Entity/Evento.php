@@ -7,7 +7,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Evento
- * @ORM\Entity
  */
 class Evento
 {
@@ -40,12 +39,6 @@ class Evento
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     */
-    private $imagen;
-
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
      * @Assert\Count(
      *              min = "1", 
      *              max = "8",
@@ -55,11 +48,13 @@ class Evento
      */
     private $nombreAfectacion;
 
+    /**
+     * Constructor
+     */
     public function __construct()
     {
-        $this->idImagen = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->IdImagen = new \Doctrine\Common\Collections\ArrayCollection();
         $this->nombreAfectacion = new \Doctrine\Common\Collections\ArrayCollection();
-        
         $this->fecha = new \DateTime();
     }
 
@@ -165,39 +160,7 @@ class Evento
         return $this->id;
     }
 
-    /**
-     * Add imagen
-     *
-     * @param \AppBundle\Entity\Imagen $imagen
-     * @return Evento
-     */
-    public function addImagen(\AppBundle\Entity\Imagen $imagen)
-    {
-        $this->imagen[] = $imagen;
-
-        return $this;
-    }
-
-    /**
-     * Remove imagen
-     *
-     * @param \AppBundle\Entity\Imagen $imagen
-     */
-    public function removeImagen(\AppBundle\Entity\Imagen $imagen)
-    {
-        $this->imagen->removeElement($imagen);
-    }
-
-    /**
-     * Get imagen
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getImagen()
-    {
-        return $this->imagen;
-    }
-
+   
     /**
      * Add nombreAfectacion
      *
@@ -230,6 +193,8 @@ class Evento
     {
         return $this->nombreAfectacion;
     }
+
+    
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
