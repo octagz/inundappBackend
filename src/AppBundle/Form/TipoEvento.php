@@ -16,17 +16,17 @@ class TipoEvento extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
        $builder
-            ->add('latitud', NumberType::class,
+            ->add('latitud', get_class(new NumberType),
                     array(
                         'required' => true
                          )  
                  )
-            ->add('longitud', NumberType::class,
+            ->add('longitud', get_class(new NumberType),
                     array(
                         'required' => true
                          )  
                  )
-            ->add('nombreAfectacion', EntityType::class,array(
+            ->add('nombreAfectacion', 'entity' ,array(
                 'class' => 'AppBundle:Afectacion',
                 'choice_label' => 'nombre',
                 'multiple' => true,
@@ -34,7 +34,7 @@ class TipoEvento extends AbstractType {
                 'required' => true
                          )
                   )
-            ->add('fenomeno', ChoiceType::class,array(
+            ->add('fenomeno', get_class(new ChoiceType),array(
                 'choices' => array(
                                 'Inundacion' => 'Inundacion', 
                                 'Lluvia' => 'Lluvia',
