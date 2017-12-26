@@ -2,11 +2,10 @@
     ServerName hosting.cs.uns.edu.ar
     ServerAlias www.hosting.cs.uns.edu.ar
 
-    DocumentRoot public_html
-    <Directory public_html>
+    DocumentRoot /home/www-users/inundapp/public_html/inundapp/web
+    <Directory /home/www-users/inundapp/public_html/inundapp/web>
         AllowOverride All
-        Order Allow,Deny
-        Allow from All
+        Require all granted
 
         <IfModule mod_rewrite.c>
             Options -MultiViews
@@ -17,7 +16,4 @@
     </Directory>
     ErrorLog /var/log/apache2/symfony_error.log
     CustomLog /var/log/apache2/symfony_access.log combined
-
-    SetEnv          SYMFONY__DATABASE__USER u_inundapp
-    SetEnv          SYMFONY__DATABASE__PASSWORD UNIVERSE-parallel-1999
 </VirtualHost>
