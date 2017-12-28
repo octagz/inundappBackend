@@ -37,14 +37,13 @@ class Imagen
       //Este web path es el que usamos en el template para linkear a la imagen
         return null === $this->path
             ? null
-            : $this->getUploadDir().'/'.$this->path;
+            : $this->getUploadDir().$this->path;
     }
 
     protected function getUploadRootDir()
     {
         //Este es el path absoluto donde se guardan las fotos
-        
-        return __DIR__.'/../../../web/'.$this->getUploadDir();
+        return $_SERVER["DOCUMENT_ROOT"].'/'.$this->getUploadDir();
     }
 
     protected function getUploadDir()
@@ -60,7 +59,7 @@ class Imagen
     // use the original file name here but you should
     // sanitize it at least to avoid any security issues
 
-    $extension = 'png'; //Seteo extension default
+    $extension = 'jpg'; //Seteo extension default
 
     //Construyo el path para la imagen
      $path_recuperado = rand(1, 99999).'.'.$extension;
