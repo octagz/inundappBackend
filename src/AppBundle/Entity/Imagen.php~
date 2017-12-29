@@ -37,14 +37,15 @@ class Imagen
       //Este web path es el que usamos en el template para linkear a la imagen
         return null === $this->path
             ? null
-            : $this->getUploadDir().$this->path;
+            : '~inundapp/inundapp/web/'.$this->getUploadDir().$this->path;
     }
 
     protected function getUploadRootDir()
     {
         //Este es el path absoluto donde se guardan las fotos
-        return $_SERVER["DOCUMENT_ROOT"].'/'.$this->getUploadDir();
-    }
+        #return '/home/www-users/inundapp/public_html/inundapp/web/'.$this->getUploadDir();
+    return realpath('./../../../web/').$this->getUploadDir();
+	}
 
     protected function getUploadDir()
     {
@@ -62,7 +63,7 @@ class Imagen
     $extension = 'jpg'; //Seteo extension default
 
     //Construyo el path para la imagen
-     $path_recuperado = rand(1, 99999).'.'.$extension;
+     $path_recuperado = rand(1, 999999).'.'.$extension;
       
      //Esta función es idéntica que llamar a fopen(), fwrite() y fclose() sucesivamente para escribir información en un fichero.
     //Si filename no existe, se crea el fichero. De otro modo, el fichero existente se sobrescribe, a menos que la bandera FILE_APPEND esté establecida. 

@@ -38,12 +38,12 @@ class TipoEvento extends AbstractType {
                 'choices' => array(
                                 'Inundacion' => 'Inundacion', 
                                 'Lluvia' => 'Lluvia',
-                                'Tormenta' => 'Tormenta',
+                                'Tormenta Electrica SP' => 'Tormenta Electrica SP',
                                 'Llovizna' => 'Llovizna',
-                                'Viento' => 'Viento',
+                                'Tormenta Electrica CP' => 'Tormenta Electrica CP',
                                 'Nieve' => 'Nieve',
                                 'Granizo' => 'Granizo',
-                                'Actividad Electrica' => 'Actividad Electrica'),
+                                'Anegamiento' => 'Anegamiento'),
                 'choices_as_values' => true,
                 'required' => true
                         )
