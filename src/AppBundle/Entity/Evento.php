@@ -55,7 +55,10 @@ class Evento
     {
         $this->IdImagen = new \Doctrine\Common\Collections\ArrayCollection();
         $this->nombreAfectacion = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->fecha = new \DateTime();
+        
+	$now = new \DateTime();
+	$now->sub(new \DateInterval('PT5M10S'));
+	$this->fecha = $now;
     }
 
     /**
