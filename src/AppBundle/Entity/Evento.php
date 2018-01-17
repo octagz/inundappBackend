@@ -57,7 +57,7 @@ class Evento
         $this->nombreAfectacion = new \Doctrine\Common\Collections\ArrayCollection();
         
 	$now = new \DateTime();
-	$now->sub(new \DateInterval('PT5M10S'));
+	$now->sub(new \DateInterval('PT5M50S'));
 	$this->fecha = $now;
     }
 
