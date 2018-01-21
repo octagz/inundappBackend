@@ -41,7 +41,7 @@ class Evento
      * @var \Doctrine\Common\Collections\Collection
      * @Assert\Count(
      *              min = "1", 
-     *              max = "8",
+     *              max = "9",
      *              minMessage = "No ha ingresado una afectacion valida.", 
      *              maxMessage = "Supero el limite de afectaciones para un fenomeno."
      *              )
