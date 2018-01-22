@@ -10,5 +10,4 @@ INSERT INTO afectacion VALUES ("Vegetacion");
 INSERT INTO afectacion VALUES ("Señalizacion");
 INSERT INTO afectacion VALUES ("Animal");
 INSERT INTO afectacion VALUES ("Persona");
-
-
+INSERT INTO afectacion VALUES ("Camino");
