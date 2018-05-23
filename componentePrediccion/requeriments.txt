@@ -1,3 +1,4 @@
 pyowm
 pandas
 numpy
+pyweatherbit
