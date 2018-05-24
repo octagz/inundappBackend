@@ -1,19 +1,24 @@
 # -*- coding: utf-8 -*-
-
+import __init__
 from apiWBIOPatch import apiWBIOPatch
 import claves
 import time
 import math
 from datetime import datetime
 from datetime import timedelta
-
+from abc import ABCMeta, abstractproperty
 from ServicioWeb import ServicioWeb
 
-class ServicioWebPrecipitacionWBIO(ServicioWeb):
+class ServicioWebWBIO(ServicioWeb):
+	__metaclass__ = ABCMeta
 
 	def __init__(self):
 		self.api = apiWBIOPatch(claves.key_WBIO,granularity='daily',https=True)
 		
+
+	@abstractproperty
+	def nombre_servicio(self):
+		pass
 
 	def obtenerServicio(self,coords,Fecha=None):
 		hoy = datetime.today().date()
@@ -32,11 +37,11 @@ class ServicioWebPrecipitacionWBIO(ServicioWeb):
 			#Uso de forecast
 			weather = self.api.get_forecast(lat=coords[0],lon=coords[1])
 			
-		series = weather.get_series(['precip'])
+		series = weather.get_series([self.nombre_servicio()])
 		encontro = False
 		for dia in series:
 			if(dia['datetime'].date() == self.fecha):
-				precipitacion = dia['precip']
+				precipitacion = dia[self.nombre_servicio()]
 				encontro = True
 				break
 
@@ -55,9 +60,6 @@ class ServicioWebPrecipitacionWBIO(ServicioWeb):
 		weather = self.api.get_history(country=pais, city=ciudad,
 										 start_date=self.fecha,
 										 end_date=fecha_fin)
-		series = weather.get_series(['precip'])
-		return series[0]['precip']
+		series = weather.get_series([self.nombre_servicio()])
+		return series[0][self.nombre_servicio()]
 
-
-s = ServicioWebPrecipitacionWBIO()
-print(s.obtenerServicio(Fecha=datetime(2018,5,1), coords=[-37.8756344,-61.3618317]))
