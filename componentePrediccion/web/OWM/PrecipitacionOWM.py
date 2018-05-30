@@ -16,5 +16,5 @@ class PrecipitacionOWM(ServicioWebOWM):
 			pass
 		return suma
 	
-s = PrecipitacionOWM()
-print('Precipitacion acumulada del dia',s.obtenerServicio(Fecha=datetime(2018,5,28,0,0), coords=[-37.8756344,-61.3618317]))
+#s = PrecipitacionOWM()
+#print('Precipitacion acumulada del dia',s.obtenerServicio(Fecha=datetime(2018,5,28,0,0), coords=[-37.8756344,-61.3618317]))

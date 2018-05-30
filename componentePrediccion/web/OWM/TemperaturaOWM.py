@@ -14,5 +14,5 @@ class TemperaturaOWM(ServicioWebOWM):
 		#print('sumo: ',weather.get_temperature('celsius')['temp'], weather.get_reference_time())
 		return weather.get_temperature('celsius')['temp']/8.0
 
-swtemp = TemperaturaOWM()
-print('Promedio del dia',swtemp.obtenerServicio(Fecha=datetime(2018,5,26,0,0), coords=[-37.8756344,-61.3618317]))
+#swtemp = TemperaturaOWM()
+#print('Promedio del dia',swtemp.obtenerServicio(Fecha=datetime(2018,5,26,0,0), coords=[-37.8756344,-61.3618317]))

@@ -1,0 +1,5 @@
+latClave = 'Latitud'
+longClave = 'Longitud'
+tempClave = 'Temperatura'
+precipClave = 'Precipitacion'
+humedadClave = 'Humedad'

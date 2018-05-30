@@ -25,5 +25,5 @@ class DatasetI(object):
 		pass
 
 	@abstractmethod
-	def completarDataset(self):
+	def completarDataset(self,Fecha):
 		pass
