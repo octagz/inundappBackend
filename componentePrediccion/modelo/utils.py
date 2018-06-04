@@ -25,6 +25,7 @@ def encontrarValorLatLong(lat,lon,recurso,feature):
 	else:
 		return q.iloc[0][feature]
 
+<<<<<<< HEAD
 #Lo que primero varia es la longitud
 def encontrarValorLongLat(lat,lon,recurso,feature):
 	#Conversión a formato QGis
