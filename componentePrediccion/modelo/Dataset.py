@@ -32,6 +32,7 @@ class Dataset(DatasetI):
 
 
 	def actualizarModelo(self):
+		
 		pass
 
 	#filas debe ser un dataframe pandas
