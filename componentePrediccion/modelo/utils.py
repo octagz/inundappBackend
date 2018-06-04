@@ -20,4 +20,4 @@ def encontrarValor(lat,lon,recurso,feature):
 	else:
 		return q.iloc[0][feature]
 
-print encontrarValor(38.419382,60.406622,'test.xyz','Poblacion')
+print encontrarValor(38.419382,59.406622,'test.xyz','Poblacion')
