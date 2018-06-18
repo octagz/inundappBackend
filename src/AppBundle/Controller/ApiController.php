@@ -10,8 +10,14 @@ use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\Evento;
 use AppBundle\Form\TipoEvento;
 use AppBundle\Entity\Imagen;
+use AppBundle\Controller\NotificationController;
 
 class ApiController extends Controller {
+
+    public function __construct() {
+
+        $this->notifications = new NotificationController();
+    }
 
     /**
      * @Route("/api/eventos")
@@ -174,6 +180,9 @@ class ApiController extends Controller {
             $em->persist($evento);
             $em->flush();
 
+            //Send push notification
+            $this->notifications->sendNotification($this->serializarEvento($evento));
+
             $response = new Response(json_encode(
               array(
                 'upload_uri' => urlencode($evento->getId()))
@@ -214,9 +223,10 @@ class ApiController extends Controller {
     private function serializarImagen($imagenes) {
         
         $imagenesSerializadas = array();
-        foreach($imagenes as $i){
-            array_push($imagenesSerializadas,urlencode($this->URLSitio().$i->getWebPath()));
-         }
+        if (!is_null($imagenes))
+            foreach($imagenes as $i){
+                array_push($imagenesSerializadas,urlencode($this->URLSitio().$i->getWebPath()));
+            }
          
         return $imagenesSerializadas;
     }
