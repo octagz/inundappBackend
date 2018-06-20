@@ -25,7 +25,6 @@ def encontrarValorLatLong(lat,lon,recurso,feature):
 	else:
 		return q.iloc[0][feature]
 
-<<<<<<< HEAD
 #Lo que primero varia es la longitud
 def encontrarValorLongLat(lat,lon,recurso,feature):
 	#Conversión a formato QGis
@@ -59,4 +58,28 @@ def unirDatos():
 	q.reset_index()
 	q.to_csv('SuelosyPoblacion.csv')
 
-print encontrarValorLongLat(-37.8763,-62.0032,'SuelosyPoblacion.csv','Poblacion')
+#print encontrarValorLongLat(-37.8763,-62.0032,'SuelosyPoblacion.csv','Poblacion')
+
+#Obtener valores unicos
+#df['Columna'].unique()
+#Eliminar valores afuera del poligono
+#dfSueloPulido = dfSuelo.drop(dfSuelo[dfSuelo.Drenaje==dfSuelo['Drenaje'][0].index)
+#dfPobPulido = dfPoblacion.drop(dfPoblacion[dfPoblacion.Poblacion==dfPoblacion['Poblacion'][0].index)
+#dfSlopePul = dfSlope.drop(dfSlope[dfSlope.Slope==dfSlope['Slope'][0].index)
+#dfDeprePul = dfDepre.drop(dfDepre[dfDepre.enDepresion==dfDepre['enDepresion'][0].index)
+#DSM
+
+#Procedicmiento
+#dfFinal = pd.concat([df1,df2,df3],axis=1)
+#dfTest = dfTest.loc[:,~dfTest.columns.duplicated()]
+
+#Interseccion: dfTest = drenaje.join(poblacion,how='inner',lsuffix='_caller',rsuffix='_other')
+
+#If you have an ArcGIS Spatial Analyst license you can use 
+#the tool Sample (Spatial Analyst).
+# This tool creates a ZXY-ascii file from your raster file.
+
+def pulirDataset(Path,Feature,Round,ValorARemover):
+	df = pd.read_csv(Path,delim_whitespace=True,names=['Latitud','Longitud',Feature])
+	dfPul = df.drop(df[df.Feature==ValorARemover].index)
+	return dfPul

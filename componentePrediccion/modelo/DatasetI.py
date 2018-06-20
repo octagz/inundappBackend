@@ -9,7 +9,7 @@ class DatasetI(object):
 		self.path=path
 
 	@abstractmethod
-	def actualizarModelo(self):
+	def actualizarModelo(self,Fecha):
 		pass
 
 	@abstractmethod

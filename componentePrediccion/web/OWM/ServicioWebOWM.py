@@ -12,7 +12,7 @@ from ServicioWeb import ServicioWeb
 class ServicioWebOWM(ServicioWeb):
 	__metaclass__ = ABCMeta
 
-	def __init__(self):
+	def __init__(self, Alternativa=None):
 		self.owm = pyowm.OWM(claves.Key_OWM)
 
 	def obtenerServicio(self,coords,Fecha=None):
@@ -33,17 +33,25 @@ class ServicioWebOWM(ServicioWeb):
 			suma = 0;
 			for weather in forecast:
 
-				timestampApi = weather.get_reference_time()-10800
-				ts = time.mktime(self.fecha.timetuple())
-				dia = 60*60*24
-				if(timestampApi>= ts and timestampApi<ts+dia):
+				if(self.enPeriodo(weather)):
 					suma = suma + self.obtenerValor(weather)
 
 			return suma
 		else:
-			raise Exception('Este servicio no sirve para la fecha dada')
-
+			#Intenta con otro servicio web
+			if (Alternativa is None):
+				raise Exception('Este servicio no sirve para la fecha dada')
+			else:
+				s  = PrecipitacionWBIO()
+				return s.obtenerServicio(coords=coords, Fecha=self.fecha)
 
 	@abstractmethod
 	def obtenerValor(self,weather):
 		pass
+
+	#Por defecto es un día
+	def enPeriodo(self,weather):
+		timestampApi = weather.get_reference_time()-10800 #Correción uso horario
+		ts = time.mktime(self.fecha.timetuple())
+		dia = 60*60*24
+		return timestampApi>= ts and timestampApi<ts+dia
