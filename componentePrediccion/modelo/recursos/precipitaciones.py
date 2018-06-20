@@ -49,7 +49,7 @@ class precipitaciones:
         print '----------------------------------------------------------------------------------------------------------------------------'
 
     def storeData(self):
-        self.dataframe.to_csv('precipitaciones.csv')
+        self.dataframe.to_csv('precipitaciones.csv', index = False)
         print 'dataframe update saved'
               
     def sendRequest(self, payload):
