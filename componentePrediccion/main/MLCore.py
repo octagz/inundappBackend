@@ -31,12 +31,11 @@ class MLCore:
 		datasetTestConFeature = copy.deepcopy(datasetTestSinFeature)
 
 		datasetTestSinFeature.borrarFeature(feature='hayInundacion')
+		print("Consultando...")
 		respuesta = modeloEspecifico.consultarModelo(datasetTestSinFeature)
-		print respuesta
 		#Comparar la respuesta con los verdaderos valores.
 		dfTest = datasetTestConFeature.obtenerDatos()
 		valores = dfTest['hayInundacion'].values
-		print valores
 		#Determinacion eficacia
 		aciertos = 0
 		for i,r in enumerate(respuesta):
@@ -52,6 +51,7 @@ class MLCore:
 
 def main():
 	mlCore = MLCore()
-	mlCore.testDataset(PathEntre='entren.csv',PathTest='test.csv')
+	mlCore.testDataset(PathEntre='entren.csv',PathTest='datasetEntrenamiento.csv')
+
 
 if __name__ == "__main__" : main()

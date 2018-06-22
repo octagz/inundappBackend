@@ -7,9 +7,9 @@ import sys,os
 import nombreColumnas
 from OWM.PrecipitacionOWM import PrecipitacionOWM
 from OWM.TemperaturaOWM import TemperaturaOWM
+from WBIO.PrecipAcumuladaWBIO import PrecipAcumuladaWBIO
 
 from WBIO.PrecipitacionWBIO import PrecipitacionWBIO
-from WBIO.TemperaturaWBIO import TemperaturaWBIO
 from ServicioLocal import ServicioLocal
 import utils
 from datetime import datetime
@@ -27,11 +27,15 @@ class Dataset(DatasetI):
 		super(Dataset,self).__init__(path)
 		self.escala = 1.0/50000.0
 
-		self.mapeoServicios = {nombreColumnas.tempClave:TemperaturaWBIO(),
-								nombreColumnas.precipClave:PrecipitacionWBIO()}
+		self.mapeoServicios = {nombreColumnas.precipClave:PrecipitacionWBIO(),
+								nombreColumnas.preAcumClave:PrecipAcumuladaWBIO()}
 
-		self.pathVariablesFijas = 'SuelosyPoblacion.csv'
-		self.variablesFijas = [nombreColumnas.drenajeClave, nombreColumnas.poblacionClave]
+		self.pathVariablesFijas = 'grilla.csv'
+		self.variablesFijas = [nombreColumnas.drenajeClave,
+								 nombreColumnas.poblacionClave,
+								 nombreColumnas.alturaClave,
+								 nombreColumnas.slopeClave,
+								 nombreColumnas.depreClave]
 
 		if self.path is None:
 			self.datos = pd.DataFrame(columns=[nombreColumnas.latClave,
@@ -96,13 +100,14 @@ class Dataset(DatasetI):
 					fila[c] = valorObtenido
 
 			print fila 
-			self.agregarFila(filas=fila)
+			self.datos = pd.concat([self.datos,fila])
 			#Ahora hay que agregar la entrada a self.datos
 		
 		pass
 
 	#filas debe ser un dataframe pandas
-	def agregarFila(self,filas):
+	def agregarFila(self,dataset):
+		filas = dataset.obtenerDatos()
 		self.datos = pd.concat([self.datos,filas])
 
 	#agregar columna al dataset
@@ -147,5 +152,5 @@ class Dataset(DatasetI):
 
 #dataset = Dataset()
 #dataset.imprimir()
-#dataset.actualizarModelo(Fecha = datetime(2018,4,8,21,0))
+#dataset.actualizarModelo(Fecha = datetime(2018,4,10,21,0))
 #dataset.imprimir()

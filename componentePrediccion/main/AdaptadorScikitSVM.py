@@ -41,5 +41,6 @@ class AdaptadorScikitSVM(MLInterfaz):
 		
 		dataset = dataset.obtenerDatos()
 		X = preprocessing.scale(dataset.loc[:,dataset.columns!=self.feature])
+		X = X[0:100000]
 		rta = self.clasificador.predict(X)
 		return rta
