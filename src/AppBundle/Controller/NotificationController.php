@@ -27,6 +27,16 @@ class NotificationController extends Controller {
     private $httpClient;
 
     /**
+     * instance of GuzzleHttp\Client used by Places API
+     */
+    private $httpClient_places;
+
+     /**
+     * Places API credentials
+     */
+    private $places_credentials;
+
+    /**
      * generic firebase endpoint url
      */
     private $endpoint = 'https://fcm.googleapis.com/v1/projects';
@@ -41,8 +51,10 @@ class NotificationController extends Controller {
     {
         //Load service account credentials
         $this->setCredentials();
-        //Get GuzzleHttp\Client
-        $this->setClient();;
+        //Get authenticated GuzzleHttp\Client
+        $this->setClient();
+        //Get GuzzleHttp\Client used by Places API
+        $this->setClientPlaces();
     }
 
     private function setCredentials() {
@@ -65,6 +77,15 @@ class NotificationController extends Controller {
         $this->client->addScope($this->scope);
         // Get authenticated GuzzleHttp/Client
         $this->httpClient = $this->client->authorize();
+    }
+
+    private function setClientPlaces() {
+
+        $this->httpClient_places = new \GuzzleHttp\Client();
+        $credential_path = realpath("../src/AppBundle/Resources/config/pushnotifications") .
+                           '/locationiq_service.json';
+        $content = file_get_contents($credential_path);
+        $this->places_credentials = json_decode($content, true);
     }
 
     private function getEndpointURL() {
@@ -109,13 +130,19 @@ class NotificationController extends Controller {
 
     private function prepararTitle($fenomeno) {
         
-        return 'Detectamos ' . $fenomeno . ' en la zona!';
+        return '¡Detectamos ' . $fenomeno . '!';
     }
 
-    private function prepararBody($afectaciones) {
+    private function prepararBody($afectaciones, $nearestPlace) {
 
         $length = count($afectaciones);
-        $body = 'Daños registrados en ' . array_shift($afectaciones);
+        $body = '';
+        if (!is_null($nearestPlace)) {
+            $body = 'Ocurrió cerca de ' . $nearestPlace . '.' . "\r\n" . "\r\n";
+           };
+        
+        $body = $body . 'El fenómeno ocasionó destrozos en ' . array_shift($afectaciones);
+
         if ($length >= 2) {
             $last = array_pop($afectaciones);
             foreach($afectaciones as $afectacion) {
@@ -129,16 +156,50 @@ class NotificationController extends Controller {
         return $body;
     }
 
+    private function prepararPlace($lat, $lon) {
+
+        $salida = null;
+
+        $uri = $this->places_credentials['endpoint_us1'] .
+               '?' .
+               'key=' . $this->places_credentials['token_private'] . '&' .
+               'lat=' . $lat . '&' .
+               'lon=' . $lon . '&' .
+               'format=' . $this->places_credentials['format'];
+
+        //Parse http response
+        //response.license : The Licence and attribution requirements 
+        try {
+            $response_raw = $this->httpClient_places->get($uri);
+            if ($response_raw->getReasonPhrase() == "OK") {
+                $data = $response_raw->json();
+                $place_items = $data['address'];
+                $length = count($place_items);
+                $corte = ($length > 4) ? 3 : 2;
+                $place_items_explode = explode(",", $data['display_name'],-$corte);
+                $salida = implode(",", $place_items_explode);
+            };
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            echo $e->getRequest();
+            echo $e->getResponse();     
+        };
+         
+        return $salida;
+
+    }
+
     private function setNotification($evento) {
 
+        $nearestPlace = $this->prepararPlace($evento['latitud'], $evento['longitud']);
         $baseMessage = $this->generateBaseMessage();
         $title = $this->prepararTitle($evento['fenomeno']);
-        $body = $this->prepararBody($evento['afectaciones']);
+        $body = $this->prepararBody($evento['afectaciones'],$nearestPlace);
 
         $notification =  [
             "data"                      => [
                 "evento_id"                 => (string)$evento['id'],
-                "evento_fenomeno"           => $evento['fenomeno']
+                "evento_fenomeno"           => $evento['fenomeno'],
+                "cerca_de"                  => $nearestPlace
             ],
             "notification"              => [
                 "body"                  => $body,
