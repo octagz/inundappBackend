@@ -180,8 +180,8 @@ class NotificationController extends Controller {
                 $salida = implode(",", $place_items_explode);
             };
         } catch (\GuzzleHttp\Exception\RequestException $e) {
-            echo $e->getRequest();
-            echo $e->getResponse();     
+            //echo $e->getRequest();
+            //echo $e->getResponse();     
         };
          
         return $salida;
