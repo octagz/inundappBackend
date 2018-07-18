@@ -17,7 +17,6 @@ class AdaptadorScikitSVM(MLInterfaz):
 
 		data = dataset.obtenerDatos() #Obtengo el pandas de la abstracción
 		data = data.reindex(np.random.permutation(data.index))
-		data = data.iloc[0:20000]
 		X,y = self._prepararDataset(data)
 
 		clf = svm.SVC(kernel=kernel,C=C,cache_size=1000,verbose=True)
@@ -41,6 +40,5 @@ class AdaptadorScikitSVM(MLInterfaz):
 		
 		dataset = dataset.obtenerDatos()
 		X = preprocessing.scale(dataset.loc[:,dataset.columns!=self.feature])
-		X = X[0:100000]
 		rta = self.clasificador.predict(X)
 		return rta

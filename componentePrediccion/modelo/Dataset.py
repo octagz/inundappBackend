@@ -19,10 +19,11 @@ from datetime import datetime
 #Features utilizados: 
 #	Fecha, latitud, longitud
 #	Precipitacion:PrecipitacionOWM
-#	Temperatura: TemperaturaOWM
+#	Precipitacion acumulada de los últimos tres días: PrecipAcumuladaOWM
 class Dataset(DatasetI):
 	
 	#De minima el dataset tiene las columnas latitud y longitud. Luego se agregan las variables dinámicas y fijas
+	#Se asume que si se levanta un dataset de un path, el archivo no tiene filas duplicadas
 	def __init__(self,path=None):
 		super(Dataset,self).__init__(path)
 		self.escala = 1.0/50000.0
@@ -58,6 +59,8 @@ class Dataset(DatasetI):
 	def obtenerDatos(self):
 		return self.datos	
 
+	def eliminarDuplicados(self):
+		self.datos = self.datos.drop_duplicates()
 
 	#Fecha indica es la fecha de inicio del período hasta hoy
 	def actualizarModelo(self,Fecha):
@@ -123,9 +126,8 @@ class Dataset(DatasetI):
 
 	#Considera que hay columnas que ya tienen datos cargados
 	#Se fija cuales son los features dinámicos y los completa 
-	#consultando a los servicios web de su mapeo
-	#Es capaz de completar un dataset con distintas fechas
-	#FALTA MODIFICAR PARA QUE LEA LA FECHA DE CADA FILA Y EN BASE A ESO CONSULTE LA API
+	#consultando a los servicios web de su mapeo.
+	#Además guarda en el atributo variablesDinámicas los valores obtenidos.
 	def completarDataset(self,Fecha):
 		columnas = self.datos.columns
 
@@ -141,6 +143,12 @@ class Dataset(DatasetI):
 
 					self.datos.at[index,c] = valorObtenido
 
+		#Inicializo un pandas con las variables dinamicas
+		self.variablesDinamicas = pd.DataFrame(columns=self.mapeoServicios.keys())
+		for f in self.mapeoServicios.keys():
+			self.variablesDinamicas[f]=self.datos[f]
+
+
 
 
 	def obtenerCantidad(self):
@@ -148,6 +156,27 @@ class Dataset(DatasetI):
 
 	def imprimir(self):
 		print self.datos
+
+	#Valores debería ser un pandas.
+	def establecerDatosDinamicos(self,Valores):
+		self.variablesDinamicas = Valores
+
+	#Valores es un arreglo que determina el valor del campo hayInundacion
+	#Si se levantó de un path el dataset, ya van a haber dropeado duplicados
+	#y no va a ser necesario hacer un join con la grilla original.
+	def agregarResultados(self, Valores):
+		s = pd.Series(Valores,name="hayInundacion")
+		self.agregarFeature(s)
+		absolute_path = os.path.abspath(os.path.dirname('../modelo/recursos/'))
+		grilla = pd.read_csv(absolute_path+'/'+self.pathVariablesFijas)
+
+		#Join entre grilla y los resultados.
+		indiceDeUnion = self.variablesFijas + self.mapeoServicios.keys()
+
+		#Es para el circuito de generacion de dataset de consulta
+		if hasattr(self, 'variablesDinamicas'):
+			grilla = pd.concat([grilla,self.variablesDinamicas],axis=1)
+			self.datos = grilla.set_index(indiceDeUnion).join(self.datos.set_index(indiceDeUnion))
 
 
 #dataset = Dataset()

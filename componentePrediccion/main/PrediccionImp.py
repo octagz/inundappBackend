@@ -2,6 +2,7 @@
 import __init__
 import abc
 from PrediccionInterfaz import PrediccionInterfaz
+from ResultadoPrediccion import ResultadoPrediccion
 import pandas as pd
 from datetime import datetime,timedelta 
 
@@ -23,6 +24,13 @@ class PrediccionImp(PrediccionInterfaz):
 		fecha = datetime.now()+timedelta(days=4)
 		dfConsulta = self.adminModelo.generarDatasetConsulta(Fecha=fecha)
 		resultado = self.modeloML.consultarModelo(dfConsulta)
+		
+		#Ahora dfConsulta tiene los puntos sin duplicados y el valor de hayInundacion. Hay que reconstruir el area original:
+		dfConsulta.agregarResultados(Valores=resultado)
+
+		salida = ResultadoPrediccion(dfConsulta)
+		salida.obtenerResultado()
+
 
 	#¿Qué params?
 	def consultarModelo(self,param):

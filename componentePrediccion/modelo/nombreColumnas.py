@@ -1,7 +1,7 @@
 latClave = 'Latitud'
 longClave = 'Longitud'
 tempClave = 'Temperatura'
-precipClave = 'Lluvia'
+precipClave = 'LluviaDia'
 preAcumClave = 'LluviaAcumulada'
 humedadClave = 'Humedad'
 fechaClave = 'Fecha'

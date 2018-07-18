@@ -36,8 +36,10 @@ class AdminModelo:
 			d = Dataset(Path)
 
 		d.completarDataset(Fecha=Fecha)
-		cantEntradas = d.obtenerCantidad()
-		d.agregarFeature()
+		#Antes de eliminar duplicados, se debería guardar los valores de las variables dinámicas para luego
+		#reconstruir.
+		d.eliminarDuplicados()
+		
 		return d
 		
 	#Es parte del mecanismo de retroalimentación. Obtiene las últimas entradas
