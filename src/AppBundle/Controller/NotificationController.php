@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class NotificationController extends Controller {
 
     /**
-     * @var string
+     * google app credentials
      */
     private $CREDENTIALS = 'GOOGLE_APPLICATION_CREDENTIALS';
 
@@ -32,7 +32,7 @@ class NotificationController extends Controller {
     private $httpClient_places;
 
      /**
-     * Places API credentials
+     * places API credentials
      */
     private $places_credentials;
 
@@ -46,15 +46,26 @@ class NotificationController extends Controller {
      */
     private $endpoint_method = 'messages:send';
 
+    /**
+     * proxy server for API calls
+     */
+    private $proxy = 'http://10.0.2.200:3128';
 
     public function __construct()
     {
         //Load service account credentials
         $this->setCredentials();
+	//Set Proxy server for HTTPS API requests
+	$this->setProxyServer();
         //Get authenticated GuzzleHttp\Client
         $this->setClient();
         //Get GuzzleHttp\Client used by Places API
         $this->setClientPlaces();
+    }
+
+    private function setProxyServer() {
+
+	putenv('HTTPS_PROXY=' . $this->proxy);
     }
 
     private function setCredentials() {
@@ -108,7 +119,6 @@ class NotificationController extends Controller {
 
 
         $topic_events = "inundapp_events";
-        $topic_sender = "inundapp_event_sender";
         $condition = "'" . $topic_events . "' in topics";
 
         $message  = [ 
@@ -170,7 +180,9 @@ class NotificationController extends Controller {
         //Parse http response
         //response.license : The Licence and attribution requirements 
         try {
-            $response_raw = $this->httpClient_places->get($uri);
+            $response_raw = $this->httpClient_places->get($uri, 
+				['timeout' => 10.0, 
+				 'connect_timeout' => 3.0]); 
             if ($response_raw->getReasonPhrase() == "OK") {
                 $data = $response_raw->json();
                 $place_items = $data['address'];
@@ -181,7 +193,8 @@ class NotificationController extends Controller {
             };
         } catch (\GuzzleHttp\Exception\RequestException $e) {
             //echo $e->getRequest();
-            //echo $e->getResponse();     
+            //echo $e->getResponse();  
+	    //echo $e->getMessage();   
         };
          
         return $salida;
@@ -218,8 +231,18 @@ class NotificationController extends Controller {
 
        $url = $this->getEndpointURL();
        $message = $this->setNotification($evento);
-       // Send the Push Notification - use $response to inspect success or errors
-       $response = $this->httpClient->post( $url, ['json' => $message]);
+	try {
+	 // Send the Push Notification - use $response to inspect success or errors
+       	 $response = $this->httpClient->post( $url, 
+					      ['json' => $message, 
+					       'timeout' => 10.0, 
+					       'connect_timeout' => 3.0]);
+	} catch (\GuzzleHttp\Exception\RequestException $e) {
+	   //echo $e->getMessage();
+	   //echo $e->getRequest();
+	   //echo $e->getResponse();
+	}
+
     }
 
 }
