@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import sys
+import sys, os
 import copy
 import __init__
 from AdminModelo import AdminModelo
@@ -7,7 +7,8 @@ from AdaptadorScikitSVM import AdaptadorScikitSVM
 from AdaptadorScikitSGD import AdaptadorScikitSGD
 from PrediccionImp import PrediccionImp
 from ResultadoPrediccion import ResultadoPrediccion
-import sys,os
+import pandas as pd
+import numpy as np
 
 class MLCore:
 	
@@ -53,12 +54,6 @@ class MLCore:
 		salida = ResultadoPrediccion(Dataset=datasetTestSinFeature)
 
 		salida.obtenerResultado()
-
-
-
-import pandas as pd
-import numpy as np
-
 
 def main():
 	mlCore = MLCore()

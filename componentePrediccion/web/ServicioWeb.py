@@ -6,6 +6,6 @@ class ServicioWeb(object):
 	__metaclass__ = ABCMeta
 
 	@abstractmethod
-	def obtenerServicio(self):
+	def obtenerServicio(self, coords=None, Fecha=None):
 		pass
 

@@ -16,17 +16,17 @@ class ResultadoPrediccion:
 		try:
 			dfSalida = dfSalida[['Latitud','Longitud','hayInundacion']]
 		except (Exception):
-			print "No pudieron extraerse columnas innecesarias"
+			print "No pudieron extraerse columnas innecesarias."
 
 		dfSalida.to_csv(self.pathSalida+'/salida.csv',index=False)
-		print "Archivo generado con éxito"
+		print "Archivo generado con éxito."
 
 	def obtenerSoloPositivos(self):
 		dfSalida = self.modelo.obtenerDatos()
 		try:
 			dfSalida = dfSalida[['Latitud','Longitud','hayInundacion']]
 		except (Exception):
-			print "No pudieron extraerse columnas innecesarias"
+			print "No pudieron extraerse columnas innecesarias."
 
 		dfSalida = dfSalida.loc[dfSalida['hayInundacion']==1]
 

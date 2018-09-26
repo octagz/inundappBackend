@@ -13,7 +13,6 @@ class AdminModelo:
 		self.datasetMapeo = []
 		self.nro = 0
 		self.pathDefault = "recursos/grilla.csv"
-		pass
 
 	def generarDataset(self,Path=None):
 		if Path is None:
@@ -27,8 +26,7 @@ class AdminModelo:
 	def obtenerDataset(self,Id):
 		return self.datasetMapeo[Id]
 
-	#Devuelve un dataset para consultar al algoritmo de ML sin la columna
-	#de si hay inundación
+	#Devuelve un dataset para consultar al algoritmo de ML sin la columna hayInundación
 	def generarDatasetConsulta(self,Fecha, Path=None):
 		if(Path is None):
 			d = Dataset(self.pathDefault)
@@ -37,13 +35,14 @@ class AdminModelo:
 
 		d.completarDataset(Fecha=Fecha)
 		#Antes de eliminar duplicados, se debería guardar los valores de las variables dinámicas para luego
-		#reconstruir.
+		#reconstruir. Dataset se hace cargo de esta responsabilidad.
 		d.eliminarDuplicados()
 		
 		return d
 		
 	#Es parte del mecanismo de retroalimentación. Obtiene las últimas entradas
-	#desde esa fecha hasta hoy. Si no hay nada para retroalimentar, devuelve None.
+	#desde fecha hasta hoy. Si no hay nada para retroalimentar, devuelve None.
+	#No hace falta mantenerlo en el mapeo.
 	def generarDatasetEntrenamiento(self,Fecha):
 		d = Dataset()
 		d.actualizarModelo(Fecha=Fecha)

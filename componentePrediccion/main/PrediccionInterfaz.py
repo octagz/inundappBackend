@@ -14,7 +14,7 @@ class PrediccionInterfaz(object):
 		pass
 
 	@abstractmethod
-	def consultarModelo(self,param):
+	def consultarModelo(self,args):
 		pass
 	
 

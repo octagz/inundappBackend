@@ -30,7 +30,7 @@ class ServicioWebOWM(ServicioWeb):
 		if (self.fecha.date() >= datetime.today().date()) and (self.fecha.date() < datetime.today().date()+timedelta(days=5)) :
 			fc = self.owm.three_hours_forecast_at_coords(coords[0],coords[1])
 			forecast = fc.get_forecast()
-			suma = 0;
+			suma = 0
 			for weather in forecast:
 
 				if(self.enPeriodo(weather)):

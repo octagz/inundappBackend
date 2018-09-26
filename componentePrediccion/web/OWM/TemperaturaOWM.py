@@ -9,7 +9,7 @@ class TemperaturaOWM(ServicioWebOWM):
 		return super(TemperaturaOWM,self).obtenerServicio(Fecha=Fecha,coords=coords)
 
 	#Temperatura promedio del día. Para hacer el promedio del dia, se suma
-	#la soctava parte del valor de cada período de 3 horas.
+	#la octava parte del valor de cada período de 3 horas.
 	def obtenerValor(self, weather):
 		#print('sumo: ',weather.get_temperature('celsius')['temp'], weather.get_reference_time())
 		return weather.get_temperature('celsius')['temp']/8.0

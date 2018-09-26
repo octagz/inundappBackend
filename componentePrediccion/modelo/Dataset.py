@@ -5,28 +5,23 @@ from DatasetI import DatasetI
 import pandas as pd
 import sys,os
 import nombreColumnas
-from OWM.PrecipitacionOWM import PrecipitacionOWM
-from OWM.TemperaturaOWM import TemperaturaOWM
 from WBIO.PrecipAcumuladaWBIO import PrecipAcumuladaWBIO
-
 from WBIO.PrecipitacionWBIO import PrecipitacionWBIO
 from ServicioLocal import ServicioLocal
 import utils
 from datetime import datetime
 #Librería utilizada: Pandas
-#Escala: 1:50000
 #Feature a predecir: hayInundacion
 #Features utilizados: 
-#	Fecha, latitud, longitud
+#	Fecha, latitud, longitud -> Para el JOIN posterior a la consulta
 #	Precipitacion:PrecipitacionOWM
-#	Precipitacion acumulada de los últimos tres días: PrecipAcumuladaOWM
+#	Precipitacion acumulada de los últimos X=3 días: PrecipAcumuladaOWM
 class Dataset(DatasetI):
 	
 	#De minima el dataset tiene las columnas latitud y longitud. Luego se agregan las variables dinámicas y fijas
 	#Se asume que si se levanta un dataset de un path, el archivo no tiene filas duplicadas
 	def __init__(self,path=None):
 		super(Dataset,self).__init__(path)
-		self.escala = 1.0/50000.0
 
 		self.mapeoServicios = {nombreColumnas.precipClave:PrecipitacionWBIO(),
 								nombreColumnas.preAcumClave:PrecipAcumuladaWBIO()}
@@ -53,16 +48,13 @@ class Dataset(DatasetI):
 			except (Exception) as e:
 				print(e)
 				
-
-		
-
 	def obtenerDatos(self):
 		return self.datos	
 
 	def eliminarDuplicados(self):
 		self.datos = self.datos.drop_duplicates()
 
-	#Fecha indica es la fecha de inicio del período hasta hoy
+	#Fecha en args es la fecha de inicio del período hasta hoy
 	def actualizarModelo(self,Fecha):
 		
 		serv = ServicioLocal()
@@ -105,13 +97,11 @@ class Dataset(DatasetI):
 			print fila 
 			self.datos = pd.concat([self.datos,fila])
 			#Ahora hay que agregar la entrada a self.datos
-		
-		pass
 
 	#filas debe ser un dataframe pandas
-	def agregarFila(self,dataset):
-		filas = dataset.obtenerDatos()
-		self.datos = pd.concat([self.datos,filas])
+	def agregarFila(self,Dataset):
+		filas = Dataset.obtenerDatos()
+		self.datos = pd.concat([self.datos, filas])
 
 	#agregar columna al dataset
 	#df3 = pd.DataFrame(columns=['C'])
@@ -148,9 +138,6 @@ class Dataset(DatasetI):
 		for f in self.mapeoServicios.keys():
 			self.variablesDinamicas[f]=self.datos[f]
 
-
-
-
 	def obtenerCantidad(self):
 		return len(self.datos.index)
 
@@ -173,7 +160,7 @@ class Dataset(DatasetI):
 		#Join entre grilla y los resultados.
 		indiceDeUnion = self.variablesFijas + self.mapeoServicios.keys()
 
-		#Es para el circuito de generacion de dataset de consulta
+		#Es para el circuito de generacion de dataset de consulta del modelo
 		if hasattr(self, 'variablesDinamicas'):
 			grilla = pd.concat([grilla,self.variablesDinamicas],axis=1)
 			self.datos = grilla.set_index(indiceDeUnion).join(self.datos.set_index(indiceDeUnion))

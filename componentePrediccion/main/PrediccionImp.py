@@ -32,6 +32,5 @@ class PrediccionImp(PrediccionInterfaz):
 		salida.obtenerResultado()
 
 
-	#¿Qué params?
-	def consultarModelo(self,param):
+	def consultarModelo(self,args):
 		pass
