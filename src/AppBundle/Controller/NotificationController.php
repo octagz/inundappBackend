@@ -151,7 +151,7 @@ class NotificationController extends Controller {
             $body = 'Ocurrió cerca de ' . $nearestPlace . '.' . "\r\n" . "\r\n";
            };
         
-        $body = $body . 'El fenómeno afectó' . array_shift($afectaciones);
+        $body = $body . 'El fenómeno afectó ' . array_shift($afectaciones);
 
         if ($length >= 2) {
             $last = array_pop($afectaciones);
