@@ -4,7 +4,7 @@ namespace AppBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class NotificationController extends Controller {
+class NotificationControllerTesting extends Controller {
 
     /**
      * google app credentials
@@ -115,10 +115,10 @@ class NotificationController extends Controller {
         //any app instances that are not subscribed to TopicA, including app instances that are not subscribed to any topic, receive the message.
         //'TopicA' in topics && ('TopicB' in topics || 'TopicC' in topics)
         //FCM first evaluates any conditions in parentheses, and then evaluates the expression from left to right.
-        //You can include up to five topics in your conditional expression, and parentheses are supported. Supported operators: &&, ||, !.
+        //You can include up to five topics in your conditional NotificationController_testingexpression, and parentheses are supported. Supported operators: &&, ||, !.
 
 
-        $topic_events = "inundapp_events";
+        $topic_events = "inundapp_events_testing";
         $condition = "'" . $topic_events . "' in topics";
 
         $message  = [ 
